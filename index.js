@@ -32,7 +32,7 @@ async function getSpeed(option) {
     store.set('processPID', chrome.pid) 
     const page = await browser.newPage()
     const pendingXHR = new PendingXHR(page);
-    await page.setViewport({ width: 1920, height: 1080 })
+    await page.setViewport({ width: 860, height: 950 })
     await page.goto('http://speed.aussiebroadband.com.au/', { timeout: 120000, waitUntil: 'networkidle0' })
     await page.waitFor(5000)
     var frames = await page.frames()
@@ -64,7 +64,6 @@ async function getSpeed(option) {
     await page.waitForSelector('#results',{visible:true,timeout:0})
     await page.waitFor(500);
     await pendingXHR.waitForAllXhrFinished();
-
     const result = await speedFrame.evaluate(() => {
       let loctemp = document.querySelector('#root > div > div.test.test--finished.test--in-progress > div.container > footer > div.host-display-transition > div > div.host-display__connection.host-display__connection--sponsor > div.host-display__connection-body > h4 > span').innerText;
       let split = loctemp.split(',')
@@ -80,7 +79,14 @@ async function getSpeed(option) {
       }
       return res
     })
-    
+    let timestamp = new Date().toISOString().replace(/\.[0-9]*Z/g, '').replace(/[^0-9]/g, '')
+    if (option.screenshot) {
+      let screenshot_path = 'screenshots/'+timestamp+'.png'
+      if (option.quiet == undefined) {
+        console.log('Saving screenshot to: '+screenshot_path);
+      }
+      await page.screenshot({ path: screenshot_path });
+    }
     store.remove('browserEndpoint')
     await browser.close();
     //await chrome.kill()

@@ -20,6 +20,7 @@ program
   .option('-d, --dcsv [optional]', 'return csv format in speedtest-cli shape (non-save flow only)')
   .option('-s, --save [optional]', 'saves format to user\\Documents\\abb-speedtests, requires you to set a format')
   .option('-o, --output [optional]', 'overwrites output location')
+  .option('--screenshot [optional]', 'saves a screenshot to screenshots/ in the current directory')
   .action(function(req,optional){
     let dir = '';
     if(program.save){
@@ -43,6 +44,12 @@ program
         }
     }
 
+    if(program.screenshot == true){
+      fs.mkdir('screenshots/', { recursive: true }, (err) => {
+        if (err) throw err;
+      });
+    }
+
     let option = {
       location: program.location,
       quiet: program.quiet,
@@ -52,6 +59,7 @@ program
       dcsv:program.dcsv,
       save:program.save,
       output:program.output,
+      screenshot:program.screenshot,
       saveDir: dir
     }
    
